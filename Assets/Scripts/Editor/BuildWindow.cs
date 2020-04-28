@@ -40,6 +40,8 @@ namespace Editor
 
             if (GUILayout.Button("Scenes", _buttonLeft))
             {
+                ScenesWindow scenesWindow = GetWindow<ScenesWindow>(false, "Scenes");
+                scenesWindow.ShowUtility();
             }
 
             EditorGUILayout.Separator();
