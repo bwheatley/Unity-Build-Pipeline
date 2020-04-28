@@ -55,30 +55,31 @@ namespace Editor
                 _sceneAssets.Add(null);
             }
 
-            EditorGUILayout.Separator();
-
-            if (GUILayout.Button("Apply to Build Settings", GUILayout.Height(24)))
+            GUILayout.BeginHorizontal();
             {
-                SetEditorBuildSettingsScenes();
+                if (GUILayout.Button("None", GUILayout.MaxWidth(position.width / 2), GUILayout.Height(24)))
+                {
+                    _sceneAssets.Clear();
+                }
+
+                if (GUILayout.Button("All", GUILayout.MaxWidth(position.width / 2), GUILayout.Height(24)))
+                {
+                    foreach (string assetGuid in AssetDatabase.FindAssets("t:Scene", new[] {"Assets/Scenes"}))
+                    {
+                        string assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+                        if (string.IsNullOrEmpty(assetPath)) continue;
+
+                        SceneAsset asset = AssetDatabase.LoadAssetAtPath<SceneAsset>(assetPath);
+                        if (_sceneAssets.Contains(asset)) continue;
+
+                        _sceneAssets.Add(asset);
+                    }
+                }
             }
+            GUILayout.EndHorizontal();
         }
 
         #region Methods
-
-        private void SetEditorBuildSettingsScenes()
-        {
-            List<EditorBuildSettingsScene> editorBuildSettingsScenes = new List<EditorBuildSettingsScene>();
-            foreach (SceneAsset sceneAsset in _sceneAssets)
-            {
-                string scenePath = AssetDatabase.GetAssetPath(sceneAsset);
-                if (!string.IsNullOrEmpty(scenePath))
-                {
-                    editorBuildSettingsScenes.Add(new EditorBuildSettingsScene(scenePath, true));
-                }
-            }
-
-            EditorBuildSettings.scenes = editorBuildSettingsScenes.ToArray();
-        }
 
         #endregion Methods
     }
