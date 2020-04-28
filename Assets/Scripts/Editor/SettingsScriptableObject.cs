@@ -36,5 +36,23 @@ namespace Editor
 
             return settings;
         }
+
+        #region Methods
+
+        public string[] GetSceneAssetsPathArray()
+        {
+            List<string> sceneAssetPaths = new List<string>();
+            foreach (SceneAsset sceneAsset in sceneAssets)
+            {
+                if (sceneAsset != null)
+                {
+                    sceneAssetPaths.Add(AssetDatabase.GetAssetPath(sceneAsset));
+                }
+            }
+
+            return sceneAssetPaths.ToArray();
+        }
+
+        #endregion Methods
     }
 }
