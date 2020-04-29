@@ -16,8 +16,8 @@ namespace Editor
         #endregion Variables
 
         #region Methods
-        
-          private void Awake()
+
+        private void Awake()
         {
             _labelCenterBold = new GUIStyle {alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold};
 

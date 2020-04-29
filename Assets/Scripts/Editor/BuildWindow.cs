@@ -132,9 +132,12 @@ namespace Editor
             GUILayout.Label("Debug", _labelCenterBold);
             EditorGUILayout.Separator();
 
-            _settings.autoconnectProfiler = EditorGUILayout.Toggle("Autoconnect Profiler", _settings.autoconnectProfiler);
-            _settings.deepProfilingSupport = EditorGUILayout.Toggle("Deep Profiling Support", _settings.deepProfilingSupport);
-            
+            _settings.autoconnectProfiler =
+                EditorGUILayout.Toggle("Autoconnect Profiler", _settings.autoconnectProfiler);
+            _settings.deepProfilingSupport =
+                EditorGUILayout.Toggle("Deep Profiling Support", _settings.deepProfilingSupport);
+            _settings.buildAndRun = EditorGUILayout.Toggle("Build and Run", _settings.buildAndRun);
+
             EditorGUILayout.Separator();
 
 
@@ -148,7 +151,7 @@ namespace Editor
             {
                 Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64, true);
             }
-            
+
             EditorGUILayout.Separator();
             GUILayout.Label("Release", _labelCenterBold);
             EditorGUILayout.Separator();
@@ -177,7 +180,8 @@ namespace Editor
             BuildOptions debugBuildOptions = DebugBuildOptions;
             if (_settings.autoconnectProfiler) debugBuildOptions |= BuildOptions.ConnectWithProfiler;
             if (_settings.deepProfilingSupport) debugBuildOptions |= BuildOptions.EnableDeepProfilingSupport;
-            
+            if (_settings.buildAndRun) debugBuildOptions |= BuildOptions.AutoRunPlayer;
+
             (string targetStr, string fileExtension) = TargetToStringAndFileExtension(target);
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {

@@ -15,6 +15,7 @@ namespace Editor
 
         public bool autoconnectProfiler;
         public bool deepProfilingSupport;
+        public bool buildAndRun;
 
         #endregion Variables
 
