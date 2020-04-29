@@ -14,8 +14,13 @@ namespace Editor
 
         private GUIStyle _labelCenterBold;
         private GUIStyle _buttonLeft;
+        private GUIStyle _numberFieldCenter;
 
         private SettingsScriptableObject _settings;
+
+        private int _major;
+        private int _minor;
+        private int _patch;
 
         #endregion Variables
 
@@ -30,17 +35,71 @@ namespace Editor
         {
             _labelCenterBold = new GUIStyle {alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold};
             _buttonLeft = new GUIStyle(EditorStyles.miniButton) {alignment = TextAnchor.MiddleLeft, fixedHeight = 24};
-            
+            _numberFieldCenter = new GUIStyle(EditorStyles.numberField) {alignment = TextAnchor.MiddleCenter};
+
             _settings = SettingsScriptableObject.GetOrCreateSettings();
+
+            string[] version = PlayerSettings.bundleVersion.Split('.');
+            if (version.Length != 3)
+            {
+                _major = 0;
+                _minor = 1;
+                _patch = 0;
+                return;
+            }
+
+            _major = int.TryParse(version[0], out _major) ? _major : 0;
+            _minor = int.TryParse(version[1], out _minor) ? _minor : 1;
+            _patch = int.TryParse(version[2], out _patch) ? _patch : 0;
         }
 
         private void OnDestroy()
         {
-            // throw new NotImplementedException();
+            PlayerSettings.bundleVersion = $"{_major}.{_minor}.{_patch}";
         }
 
         private void OnGUI()
         {
+            EditorGUILayout.Separator();
+
+            PlayerSettings.companyName = EditorGUILayout.TextField("Company Name", PlayerSettings.companyName);
+            PlayerSettings.productName = EditorGUILayout.TextField("Product Name", PlayerSettings.productName);
+
+            EditorGUILayout.Separator();
+            GUILayout.Label("Version", _labelCenterBold);
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                // TODO: I need MaxHeight to stop this and the buttons overlapping.
+                _major = EditorGUILayout.IntField(_major, _numberFieldCenter, GUILayout.Height(24));
+                _minor = EditorGUILayout.IntField(_minor, _numberFieldCenter, GUILayout.Height(24));
+                _patch = EditorGUILayout.IntField(_patch, _numberFieldCenter, GUILayout.Height(24));
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("Major", GUILayout.Height(24)))
+                {
+                    _major++;
+                    _minor = 0;
+                    _patch = 0;
+                }
+
+                if (GUILayout.Button("Minor", GUILayout.Height(24)))
+                {
+                    _minor++;
+                    _patch = 0;
+                }
+
+                if (GUILayout.Button("Patch", GUILayout.Height(24)))
+                {
+                    _patch++;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.Separator();
             GUILayout.Label("Scenes", _labelCenterBold);
             EditorGUILayout.Separator();
