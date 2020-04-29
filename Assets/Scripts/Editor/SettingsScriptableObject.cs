@@ -13,6 +13,9 @@ namespace Editor
 
         public List<SceneAsset> sceneAssets;
 
+        public bool autoconnectProfiler;
+        public bool deepProfilingSupport;
+
         #endregion Variables
 
         public static SettingsScriptableObject GetOrCreateSettings()

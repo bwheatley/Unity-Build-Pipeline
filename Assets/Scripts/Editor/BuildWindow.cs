@@ -72,6 +72,7 @@ namespace Editor
 
         private void OnDestroy()
         {
+            AssetDatabase.SaveAssets();
             PlayerSettings.bundleVersion = $"{_major}.{_minor}.{_patch}";
         }
 
@@ -128,8 +129,14 @@ namespace Editor
             }
 
             EditorGUILayout.Separator();
-            GUILayout.Label("Build Configs", _labelCenterBold);
+            GUILayout.Label("Debug", _labelCenterBold);
             EditorGUILayout.Separator();
+
+            _settings.autoconnectProfiler = EditorGUILayout.Toggle("Autoconnect Profiler", _settings.autoconnectProfiler);
+            _settings.deepProfilingSupport = EditorGUILayout.Toggle("Deep Profiling Support", _settings.deepProfilingSupport);
+            
+            EditorGUILayout.Separator();
+
 
             if (GUILayout.Button("Debug Windows", _buttonLeft) &&
                 !BuildPipeline.isBuildingPlayer)
@@ -141,6 +148,10 @@ namespace Editor
             {
                 Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64, true);
             }
+            
+            EditorGUILayout.Separator();
+            GUILayout.Label("Release", _labelCenterBold);
+            EditorGUILayout.Separator();
 
             if (GUILayout.Button("Release Windows | Mac | Linux", _buttonLeft) && !BuildPipeline.isBuildingPlayer)
             {
@@ -163,12 +174,16 @@ namespace Editor
             BuildTargetGroup targetGroup = BuildPipeline.GetBuildTargetGroup(target);
             PlayerSettings.SetScriptingBackend(targetGroup, backend);
 
+            BuildOptions debugBuildOptions = DebugBuildOptions;
+            if (_settings.autoconnectProfiler) debugBuildOptions |= BuildOptions.ConnectWithProfiler;
+            if (_settings.deepProfilingSupport) debugBuildOptions |= BuildOptions.EnableDeepProfilingSupport;
+            
             (string targetStr, string fileExtension) = TargetToStringAndFileExtension(target);
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
                 locationPathName =
                     $"Builds/{PlayerSettings.bundleVersion}/{(debug ? "Debug" : "Release")}/{targetStr}/{PlayerSettings.productName}.{fileExtension}",
-                options = debug ? DebugBuildOptions : ReleaseBuildOptions,
+                options = debug ? debugBuildOptions : ReleaseBuildOptions,
                 scenes = _settings.GetSceneAssetsPathArray(),
                 target = target,
                 targetGroup = targetGroup
