@@ -29,10 +29,8 @@ namespace Editor
         private void Awake()
         {
             _labelCenterBold = new GUIStyle {alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold};
-            _buttonLeft = EditorStyles.miniButton;
-            _buttonLeft.alignment = TextAnchor.MiddleLeft;
-            _buttonLeft.fixedHeight = 24;
-
+            _buttonLeft = new GUIStyle(EditorStyles.miniButton) {alignment = TextAnchor.MiddleLeft, fixedHeight = 24};
+            
             _settings = SettingsScriptableObject.GetOrCreateSettings();
         }
 
