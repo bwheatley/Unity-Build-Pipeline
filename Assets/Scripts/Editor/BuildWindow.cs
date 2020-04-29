@@ -164,7 +164,6 @@ namespace Editor
                     break;
                 default:
                     throw new NotImplementedException();
-                    return;
             }
 
             if (buildType == "Debug")
