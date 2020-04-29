@@ -55,7 +55,8 @@ namespace Editor
             GUILayout.Label("Build Configs", _labelCenterBold);
             EditorGUILayout.Separator();
 
-            if (GUILayout.Button("Debug Windows", _buttonLeft) && !BuildPipeline.isBuildingPlayer)
+            if (GUILayout.Button("Debug Windows", _buttonLeft) &&
+                !BuildPipeline.isBuildingPlayer)
             {
                 Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneWindows64, "Debug");
             }
