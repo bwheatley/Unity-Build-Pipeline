@@ -1,0 +1,7 @@
+{
+    "name": "com.unknown-labs.build-pipeline",
+    "version": "0.1.0",
+    "displayName": "Build Pipeline",
+    "description": "",
+    "unity": "2019.3"
+}
