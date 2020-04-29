@@ -149,7 +149,7 @@ namespace Editor
             PlayerSettings.SetScriptingBackend(targetGroup, backend);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-            buildPlayerOptions.locationPathName = $"Builds/{buildType}/";
+            buildPlayerOptions.locationPathName = $"Builds/{PlayerSettings.bundleVersion}/{buildType}/";
 
             switch (target)
             {
