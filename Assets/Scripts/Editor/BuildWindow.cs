@@ -31,6 +31,23 @@ namespace Editor
             window.Show();
         }
 
+        private static (string, string) TargetToStringAndFileExtension(BuildTarget target)
+        {
+            switch (target)
+            {
+                case BuildTarget.StandaloneWindows64:
+                    return ("Windows", "exe");
+                case BuildTarget.StandaloneOSX:
+                    return ("Mac", "app");
+                case BuildTarget.StandaloneLinux64:
+                    return ("Linux", "x86_64");
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        #region Methods
+
         private void Awake()
         {
             _labelCenterBold = new GUIStyle {alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold};
@@ -117,71 +134,45 @@ namespace Editor
             if (GUILayout.Button("Debug Windows", _buttonLeft) &&
                 !BuildPipeline.isBuildingPlayer)
             {
-                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneWindows64, "Debug");
+                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneWindows64, true);
             }
 
             if (GUILayout.Button("Debug Windows (IL2CPP)", _buttonLeft) && !BuildPipeline.isBuildingPlayer)
             {
-                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64, "Debug");
+                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64, true);
             }
 
             if (GUILayout.Button("Release Windows | Mac | Linux", _buttonLeft) && !BuildPipeline.isBuildingPlayer)
             {
-                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneWindows64, "Release");
-                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneOSX, "Release");
-                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneLinux64, "Release");
+                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneWindows64);
+                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneOSX);
+                Build(ScriptingImplementation.Mono2x, BuildTarget.StandaloneLinux64);
             }
 
             if (GUILayout.Button("Release Windows | Mac | Linux (IL2CPP)", _buttonLeft) &&
                 !BuildPipeline.isBuildingPlayer)
             {
-                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64, "Release");
-                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneOSX, "Release");
-                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneLinux64, "Release");
+                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneWindows64);
+                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneOSX);
+                Build(ScriptingImplementation.IL2CPP, BuildTarget.StandaloneLinux64);
             }
         }
 
-        #region Methods
-
-        private void Build(ScriptingImplementation backend, BuildTarget target, string buildType)
+        private void Build(ScriptingImplementation backend, BuildTarget target, bool debug = false)
         {
             BuildTargetGroup targetGroup = BuildPipeline.GetBuildTargetGroup(target);
             PlayerSettings.SetScriptingBackend(targetGroup, backend);
 
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-            buildPlayerOptions.locationPathName = $"Builds/{PlayerSettings.bundleVersion}/{buildType}/";
-
-            switch (target)
+            (string targetStr, string fileExtension) = TargetToStringAndFileExtension(target);
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                case BuildTarget.StandaloneWindows64:
-                    buildPlayerOptions.locationPathName += $"Windows/{PlayerSettings.productName}.exe";
-                    break;
-                case BuildTarget.StandaloneOSX:
-                    buildPlayerOptions.locationPathName += $"Mac/{PlayerSettings.productName}.app";
-                    break;
-                case BuildTarget.StandaloneLinux64:
-                    buildPlayerOptions.locationPathName += $"Linux/{PlayerSettings.productName}.x86_64";
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            if (buildType == "Debug")
-            {
-                buildPlayerOptions.options = DebugBuildOptions;
-            }
-            else if (buildType == "Release")
-            {
-                buildPlayerOptions.options = ReleaseBuildOptions;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
-            buildPlayerOptions.scenes = _settings.GetSceneAssetsPathArray();
-            buildPlayerOptions.target = target;
-            buildPlayerOptions.targetGroup = targetGroup;
+                locationPathName =
+                    $"Builds/{PlayerSettings.bundleVersion}/{(debug ? "Debug" : "Release")}/{targetStr}/{PlayerSettings.productName}.{fileExtension}",
+                options = debug ? DebugBuildOptions : ReleaseBuildOptions,
+                scenes = _settings.GetSceneAssetsPathArray(),
+                target = target,
+                targetGroup = targetGroup
+            };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             BuildSummary summary = report.summary;

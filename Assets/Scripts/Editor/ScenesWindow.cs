@@ -15,7 +15,9 @@ namespace Editor
 
         #endregion Variables
 
-        private void Awake()
+        #region Methods
+        
+          private void Awake()
         {
             _labelCenterBold = new GUIStyle {alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold};
 
@@ -78,8 +80,6 @@ namespace Editor
             }
             GUILayout.EndHorizontal();
         }
-
-        #region Methods
 
         #endregion Methods
     }
